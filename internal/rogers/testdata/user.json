@@ -1,0 +1,37 @@
+{
+  "userName": "jane.doe",
+  "authenticated": true,
+  "accounts": [
+    {
+      "accountId": "ACCT-001",
+      "accountType": "Personal",
+      "paymentStatus": "Paid",
+      "productName": "World Elite Mastercard",
+      "productExternalCode": "WEMC",
+      "accountCurrency": "CAD",
+      "brandId": "ROGERSBRAND",
+      "openedDate": "2019-05-01",
+      "previousStatementDate": "2026-06-18",
+      "paymentDueDate": "2026-07-13",
+      "lastPaymentDate": "2026-07-01",
+      "cycleDates": ["2026-06-18", "2026-05-18", "2026-04-18"],
+      "multiCard": false,
+      "currentBalance": {"value": "842.17", "currency": "CAD"},
+      "statementBalance": {"value": "1203.55", "currency": "CAD"},
+      "statementDueAmount": {"value": "1203.55", "currency": "CAD"},
+      "creditLimit": {"value": "15000.00", "currency": "CAD"},
+      "purchasesSinceLastCycle": {"value": "842.17", "currency": "CAD"},
+      "lastPayment": {"value": "1203.55", "currency": "CAD"},
+      "realtimeBalance": {"value": "14157.83", "currency": "CAD"},
+      "cashAvailable": {"value": "3000.00", "currency": "CAD"},
+      "cashLimit": {"value": "3000.00", "currency": "CAD"},
+      "customer": {
+        "customerId": "CUST-001",
+        "cardLast4": "4821",
+        "customerType": "Primary",
+        "firstName": "Jane",
+        "lastName": "Doe"
+      }
+    }
+  ]
+}

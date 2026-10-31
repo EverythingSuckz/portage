@@ -1,0 +1,9 @@
+# Saved logins and access URLs. Never commit.
+/data/
+
+# Build output
+/portage
+/portage.exe
+*.exe~
+/dist/
+*.tmp

@@ -1,0 +1,112 @@
+{
+  "activities": [
+    {
+      "referenceNumber": "REF-777001",
+      "activityType": "TRANS",
+      "amount": {"value": "82.19", "currency": "CAD"},
+      "activityStatus": "APPROVED",
+      "activityCategory": "Purchase",
+      "activityClassification": "RETAIL",
+      "cardNumber": "************4821",
+      "merchant": {
+        "name": "LOBLAWS #1234",
+        "categoryCode": "5411",
+        "categoryDescription": "Grocery Stores, Supermarkets",
+        "category": "groceries",
+        "address": {
+          "city": "TORONTO",
+          "stateProvince": "ON",
+          "postalCode": "M5V 2T6",
+          "countryCode": "CA"
+        }
+      },
+      "date": "2026-07-10",
+      "activityCategoryCode": "GRO",
+      "customerId": "CUST-001",
+      "postedDate": "2026-07-11",
+      "activityId": "ACT-90001"
+    },
+    {
+      "referenceNumber": "REF-777002",
+      "activityType": "TRANS",
+      "amount": {"value": "-1203.55", "currency": "CAD"},
+      "activityStatus": "APPROVED",
+      "activityCategory": "Payment",
+      "activityClassification": "PAYMENT",
+      "cardNumber": "************4821",
+      "merchant": {
+        "name": "PAYMENT - THANK YOU",
+        "category": "payment"
+      },
+      "date": "2026-07-01",
+      "customerId": "CUST-001",
+      "postedDate": "2026-07-01",
+      "activityId": "ACT-90002"
+    },
+    {
+      "referenceNumber": "REF-777005",
+      "activityType": "TRANS",
+      "amount": {"value": "-26.81", "currency": "CAD"},
+      "activityStatus": "APPROVED",
+      "activityCategory": "Purchase",
+      "activityClassification": "RETAIL",
+      "cardNumber": "************4821",
+      "merchant": {
+        "name": "Cash Back / Remises",
+        "category": "rewards"
+      },
+      "date": "2026-07-12",
+      "customerId": "CUST-001",
+      "postedDate": "2026-07-13",
+      "activityId": "ACT-90005"
+    },
+    {
+      "activityType": "AUTH",
+      "amount": {"value": "56.40", "currency": "CAD"},
+      "activityStatus": "PENDING",
+      "activityCategory": "Token Auth Request",
+      "activityClassification": "RESTAURANT",
+      "cardNumber": "************4821",
+      "merchant": {
+        "name": "THE COFFEE HOUSE",
+        "categoryCode": "5812",
+        "categoryDescription": "Eating Places, Restaurants",
+        "category": "dining"
+      },
+      "date": "2026-07-15",
+      "customerId": "CUST-001",
+      "activityId": "ACT-90003"
+    },
+    {
+      "referenceNumber": "REF-777004",
+      "activityType": "TRANS",
+      "amount": {"value": "27.31", "currency": "CAD"},
+      "activityStatus": "APPROVED",
+      "activityCategory": "Purchase",
+      "activityClassification": "RETAIL",
+      "cardNumber": "************4821",
+      "merchant": {
+        "name": "STEAM GAMES",
+        "categoryCode": "5816",
+        "categoryDescription": "Digital Goods",
+        "category": "entertainment",
+        "address": {
+          "city": "SEATTLE",
+          "stateProvince": "WA",
+          "countryCode": "US"
+        }
+      },
+      "foreign": {
+        "originalAmount": {"value": "19.99", "currency": "USD"},
+        "conversionRate": 1.3512,
+        "conversionMarkupRate": 1.3662,
+        "exchangeFee": {"value": "0.30", "currency": "CAD"}
+      },
+      "date": "2026-07-08",
+      "activityCategoryCode": "ENT",
+      "customerId": "CUST-001",
+      "postedDate": "2026-07-09",
+      "activityId": "ACT-90004"
+    }
+  ]
+}
