@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Connect a bank · portage</title></head>
+<body>
+{{if eq .Step "simplefin"}}
+  <h1>Connect SimpleFIN Bridge</h1>
+  {{with .Error}}<p style="color:red">{{.}}</p>{{end}}
+  <form method="post" action="/{{.ID}}/simplefin">
+    <label>Setup token <input name="token" required autocomplete="off"></label>
+    <button>Connect</button>
+  </form>
+{{else if eq .Step "done"}}
+  <h1>Connected</h1>
+  <p>You can close this tab and go back to your AI app.</p>
+{{end}}
+</body>
+</html>
