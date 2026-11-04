@@ -59,7 +59,7 @@ func startRogers(t *testing.T, dataDir string) *Page {
 // step posts a form and fails the test unless the reply contains want.
 func step(t *testing.T, p *Page, path string, form url.Values, want string) {
 	t.Helper()
-	_, body := post(t, p.URL+path, form)
+	_, body := post(t, p.URL+"/"+path, form)
 	if !strings.Contains(body, want) {
 		t.Fatalf("POST %s: want %q in page:\n%s", path, want, body)
 	}

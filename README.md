@@ -27,22 +27,33 @@ Or build from source with `go build ./cmd/portage`. Requires Go 1.25 or newer.
 
 ## Connect your banks
 
-Run these once in a terminal. Logins are saved, readable only by you, in your
-user config folder (`%AppData%\portage` on Windows, `~/.config/portage` on
-Linux, `~/Library/Application Support/portage` on macOS). Pass `-data <dir>` or
-set `PORTAGE_DATA` to use another folder.
+The easiest way is to ask your AI app, for example "connect my Rogers account".
+It calls the `connect_bank` tool, which opens a sign-in page in your browser.
+Passwords and verification codes are typed on that page, never in the chat.
 
-**SimpleFIN Bridge:** create a setup token on the Bridge website, then run
-`portage simplefin claim <setup-token>`. Each token works only once.
+You can also open the same page from a terminal:
 
-**Rogers Bank:** run `portage rogers login`. It asks for your username,
-password, and a verification code sent by email or text. Rogers then trusts this
-device for a few months; when it stops, the tools return a warning asking you
-to log in again.
+```
+portage connect rogers
+portage connect simplefin
+```
 
-- `-name <name>` connects more than one Rogers login.
-- `-store-password=false` keeps the password out of the saved file. Give the
-  server a `ROGERS_PASSWORD` environment variable instead.
+Logins are saved, readable only by you, in your user config folder
+(`%AppData%\portage` on Windows, `~/.config/portage` on Linux,
+`~/Library/Application Support/portage` on macOS). Pass `-data <dir>` or set
+`PORTAGE_DATA` to use another folder.
+
+- **SimpleFIN Bridge** needs a setup token from the Bridge website. Each token
+  works only once.
+- **Rogers Bank** asks for your username, password, and a verification code sent
+  by email or text. Rogers then trusts this device for a few months; when it
+  stops, the tools return a warning asking you to connect again.
+
+Prefer the terminal only? `portage simplefin claim <setup-token>` and
+`portage rogers login` do the same without a browser. `portage rogers login`
+also supports `-name <name>` for more than one Rogers login, and
+`-store-password=false` to keep the password out of the saved file (give the
+server a `ROGERS_PASSWORD` environment variable instead).
 
 ## Add it to your AI app
 
@@ -76,8 +87,9 @@ Use `npx` instead of `bunx` if you don't have Bun. Add `-data <dir>` after
 |------|--------------|
 | `list_accounts` | Every connected account with its balance and available balance. |
 | `get_transactions` | Transactions, newest first. Optional filters: `account_id`, `start_date`, `end_date` (YYYY-MM-DD, inclusive), `search` (description or category), `limit` (default 100, max 1000). |
+| `connect_bank` | Opens a sign-in page in your browser to connect `rogers` or `simplefin`. |
 
-Both tools are read-only.
+`list_accounts` and `get_transactions` are read-only. Nothing can move money.
 
 - Amounts are decimal strings. Positive is money in, negative is money out. A
   negative credit card balance is the amount owed.

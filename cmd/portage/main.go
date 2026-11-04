@@ -103,7 +103,10 @@ func serve(ctx context.Context, args []string) error {
 	load := func() ([]bank.Source, error) {
 		return loadSources(dataDir)
 	}
-	srv, err := server.New(load)
+	start := func(bank string) (*setup.Page, error) {
+		return setup.Start(dataDir, bank)
+	}
+	srv, err := server.New(load, start)
 	if err != nil {
 		return err
 	}

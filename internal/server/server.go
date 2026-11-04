@@ -13,6 +13,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
 	"go.wrench.rocks/portage/internal/bank"
+	"go.wrench.rocks/portage/internal/setup"
 )
 
 const version = "0.1.0"
@@ -32,17 +33,23 @@ type cached struct {
 
 type Server struct {
 	loader Loader
+	start  Starter
 	now    func() time.Time
 
 	mu      sync.Mutex
 	sources []bank.Source
 	cache   map[string]cached
+
+	pendingMutex sync.Mutex
+	pending      map[string]*setup.Page
 }
 
 type Loader func() ([]bank.Source, error)
 
-func New(load Loader) (*Server, error) {
-	server := &Server{loader: load, now: time.Now}
+type Starter func(bank string) (*setup.Page, error)
+
+func New(load Loader, start Starter) (*Server, error) {
+	server := &Server{loader: load, start: start, now: time.Now, pending: map[string]*setup.Page{}}
 	if err := server.reload(); err != nil {
 		return nil, err
 	}
@@ -77,6 +84,7 @@ func (s *Server) MCP() *mcp.Server {
 		Annotations:  readOnly,
 		OutputSchema: outputSchema[transactionsOutput](),
 	}, s.getTransactions)
+	s.addConnectTool(srv)
 	return srv
 }
 
@@ -150,7 +158,7 @@ func (s *Server) snapshot(ctx context.Context) bank.Snapshot {
 
 	merged := bank.Snapshot{Accounts: []bank.Account{}, Transactions: []bank.Transaction{}}
 	if len(s.sources) == 0 {
-		merged.Warnings = append(merged.Warnings, "no banks are connected; run `portage simplefin claim` or `portage rogers login`")
+		merged.Warnings = append(merged.Warnings, "no banks are connected; call connect_bank to connect one")
 	}
 	for _, src := range s.sources {
 		c, ok := s.cache[src.Name()]

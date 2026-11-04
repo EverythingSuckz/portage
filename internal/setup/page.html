@@ -3,59 +3,120 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
 <title>Connect a bank · portage</title>
 <style>
-  :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
-  body { max-width: 26rem; margin: 4rem auto; padding: 0 1rem; line-height: 1.5; }
-  h1 { font-size: 1.4rem; }
-  label { display: block; margin: .8rem 0; }
-  input:not([type=radio]) { display: block; width: 100%; padding: .5rem; margin-top: .25rem; box-sizing: border-box; font: inherit; }
-  button { margin-top: 1rem; padding: .55rem 1.2rem; font: inherit; cursor: pointer; }
-  .error { color: #d33; }
-  .hint { opacity: .7; font-size: .9rem; }
+  :root {
+    color-scheme: light dark;
+    --bg: #f6f7f9; --card: #ffffff; --text: #16181d; --muted: #5d6370;
+    --border: #dfe2e7; --accent: #2457d6; --accent-text: #ffffff;
+    --error-bg: #fdecec; --error: #a3201d; --ok: #1f8a4c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1115; --card: #171a21; --text: #e8eaee; --muted: #9aa1ad;
+      --border: #2a2f3a; --accent: #5b8cff; --accent-text: #0b0d12;
+      --error-bg: #3a1716; --error: #ffb4ae; --ok: #4cc584;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 1.5rem;
+    background: var(--bg); color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { width: 100%; max-width: 25rem; }
+  .brand { margin-bottom: 1rem; font-weight: 600; letter-spacing: .01em; color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  h1 { font-size: 1.25rem; margin: 0 0 .35rem; }
+  .lead { margin: 0 0 1.25rem; color: var(--muted); }
+  .lead a { color: var(--accent); }
+  label { display: block; font-weight: 500; margin-bottom: 1rem; }
+  input:not([type=radio]) {
+    display: block; width: 100%; margin-top: .35rem; padding: .6rem .7rem;
+    border: 1px solid var(--border); border-radius: 8px; background: transparent; color: inherit; font: inherit;
+  }
+  input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .choice {
+    display: flex; align-items: center; gap: .6rem; font-weight: 400; margin-bottom: .6rem;
+    padding: .65rem .75rem; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+  }
+  .choice:has(input:checked) { border-color: var(--accent); }
+  .choice strong { display: block; font-weight: 500; }
+  .choice small { display: block; font-size: .85rem; color: var(--muted); overflow-wrap: anywhere; }
+  input.otp {
+    text-align: center; font: 600 1.6rem/1.2 ui-monospace, "Cascadia Mono", Consolas, monospace;
+    letter-spacing: .35em; padding: .7rem .5rem .7rem .85rem;
+  }
+  button {
+    width: 100%; margin-top: .5rem; padding: .65rem 1rem; border: 0; border-radius: 8px;
+    background: var(--accent); color: var(--accent-text); font: inherit; font-weight: 600; cursor: pointer;
+  }
+  button:hover { filter: brightness(1.08); }
+  .error { background: var(--error-bg); color: var(--error); border-radius: 8px; padding: .6rem .75rem; margin: 0 0 1rem; }
+  .done { text-align: center; }
+  .done svg { width: 3rem; height: 3rem; color: var(--ok); margin-bottom: .5rem; }
+  footer { margin-top: 1rem; font-size: .85rem; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: .4rem; }
+  footer svg { width: .95rem; height: .95rem; flex: none; }
 </style>
 </head>
 <body>
-{{if eq .Step "simplefin"}}
-  <h1>Connect SimpleFIN Bridge</h1>
-  {{with .Error}}<p class="error">{{.}}</p>{{end}}
-  <form method="post" action="/{{.ID}}/simplefin">
-    <label>Setup token <input name="token" required autocomplete="off"></label>
-    <button>Connect</button>
-  </form>
-  <p class="hint">Create a setup token on the SimpleFIN Bridge website. Each token works once.</p>
+<main>
+  <div class="brand">portage</div>
+  <div class="card">
+  {{if eq .Step "simplefin"}}
+    <h1>Connect SimpleFIN Bridge</h1>
+    <p class="lead">Paste a setup token from <a href="https://bridge.simplefin.org" target="_blank" rel="noopener noreferrer">SimpleFIN Bridge</a>. You only need to do this once.</p>
+    {{with .Error}}<p class="error" role="alert">{{.}}</p>{{end}}
+    <form method="post" action="/{{.ID}}/simplefin">
+      <label>Setup token <input name="token" required autocomplete="off" spellcheck="false" autofocus></label>
+      <button>Connect</button>
+    </form>
 
-{{else if eq .Step "rogers"}}
-  <h1>Connect Rogers Bank</h1>
-  {{with .Error}}<p class="error">{{.}}</p>{{end}}
-  <form method="post" action="/{{.ID}}/rogers">
-    <label>Username <input name="username" required autocomplete="username"></label>
-    <label>Password <input name="password" type="password" required autocomplete="current-password"></label>
-    <button>Sign in</button>
-  </form>
-  <p class="hint">Your login is saved only on this computer.</p>
+  {{else if eq .Step "rogers"}}
+    <h1>Connect Rogers Bank</h1>
+    <p class="lead">Sign in with your Rogers Bank online banking login.</p>
+    {{with .Error}}<p class="error" role="alert">{{.}}</p>{{end}}
+    <form method="post" action="/{{.ID}}/rogers">
+      <label>Username <input name="username" required autocomplete="username" autofocus></label>
+      <label>Password <input name="password" type="password" required autocomplete="current-password"></label>
+      <button>Sign in</button>
+    </form>
 
-{{else if eq .Step "choose"}}
-  <h1>Where should Rogers send your code?</h1>
-  {{with .Note}}<p class="error">{{.}}</p>{{end}}
-  <form method="post" action="/{{.ID}}/answer">
-    {{range $i, $p := .Prefs}}
-      <label><input type="radio" name="answer" value="{{$i}}" required {{if eq $i 0}}checked{{end}}> {{$p.Type}}: {{$p.Value}}</label>
-    {{end}}
-    <button>Send code</button>
-  </form>
+  {{else if eq .Step "choose"}}
+    <h1>Where should Rogers send your code?</h1>
+    <p class="lead">Rogers needs to confirm it's you before it trusts this computer.</p>
+    {{with .Note}}<p class="error" role="alert">{{.}}</p>{{end}}
+    <form method="post" action="/{{.ID}}/answer">
+      {{range $i, $p := .Prefs}}
+        <label class="choice"><input type="radio" name="answer" value="{{$i}}" required {{if eq $i 0}}checked{{end}}><span><strong>{{label $p.Type}}</strong><small>{{contact $p.Value}}</small></span></label>
+      {{end}}
+      <button>Send code</button>
+    </form>
 
-{{else if eq .Step "code"}}
-  <h1>Enter your verification code</h1>
-  {{with .Note}}<p class="error">{{.}}</p>{{end}}
-  <form method="post" action="/{{.ID}}/answer">
-    <label>Code <input name="answer" required autocomplete="one-time-code" inputmode="numeric" autofocus></label>
-    <button>Verify</button>
-  </form>
+  {{else if eq .Step "code"}}
+    <h1>Enter your verification code</h1>
+    <p class="lead">Check your email or phone for the code Rogers just sent.</p>
+    {{with .Note}}<p class="error" role="alert">{{.}}</p>{{end}}
+    <form method="post" action="/{{.ID}}/answer">
+      <label>Code <input class="otp" name="answer" required autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="••••••" autofocus></label>
+      <button>Verify</button>
+    </form>
 
-{{else if eq .Step "done"}}
-  <h1>Connected</h1>
-  <p>You can close this tab and go back to your AI app.</p>
-{{end}}
+  {{else if eq .Step "done"}}
+    <div class="done">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg>
+      <h1>Connected</h1>
+      <p class="lead">You can close this tab and go back to your AI app.</p>
+    </div>
+    <script>history.replaceState(null, "", "/connected")</script>
+  {{end}}
+  </div>
+  <footer>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    Credentials are stored only on this device.
+  </footer>
+</main>
 </body>
 </html>

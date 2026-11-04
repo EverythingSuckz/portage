@@ -117,7 +117,7 @@ func TestWrongIDIsNotFound(t *testing.T) {
 	if code, _ := get(t, wrong); code != http.StatusNotFound {
 		t.Errorf("GET with wrong id = %d, want 404", code)
 	}
-	if code, _ := post(t, wrong+"simplefin", url.Values{"token": {"x"}}); code != http.StatusNotFound {
+	if code, _ := post(t, wrong+"/simplefin", url.Values{"token": {"x"}}); code != http.StatusNotFound {
 		t.Errorf("POST with wrong id = %d, want 404", code)
 	}
 	assertOpen(t, p)
@@ -128,7 +128,7 @@ func TestBadTokenShowsErrorThenRetrySucceeds(t *testing.T) {
 	dir := t.TempDir()
 	p := startPage(t, dir)
 
-	code, body := post(t, p.URL+"simplefin", url.Values{"token": {"bad"}})
+	code, body := post(t, p.URL+"/simplefin", url.Values{"token": {"bad"}})
 	if code != http.StatusOK || !strings.Contains(body, "token already used") {
 		t.Fatalf("bad token = %d, body:\n%s", code, body)
 	}
@@ -137,7 +137,7 @@ func TestBadTokenShowsErrorThenRetrySucceeds(t *testing.T) {
 	}
 	assertOpen(t, p)
 
-	_, body = post(t, p.URL+"simplefin", url.Values{"token": {"good"}})
+	_, body = post(t, p.URL+"/simplefin", url.Values{"token": {"good"}})
 	if !strings.Contains(body, "Connected") {
 		t.Fatalf("retry body:\n%s", body)
 	}
@@ -153,7 +153,7 @@ func TestSuccessShutsDownPage(t *testing.T) {
 	fakeClaim(t, nil)
 	p := startPage(t, t.TempDir())
 
-	post(t, p.URL+"simplefin", url.Values{"token": {"good"}})
+	post(t, p.URL+"/simplefin", url.Values{"token": {"good"}})
 	if err := waitDone(t, p); err != nil {
 		t.Fatalf("Done = %v, want nil", err)
 	}

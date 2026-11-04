@@ -11,6 +11,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -29,7 +30,27 @@ var claim = simplefin.Claim
 var pageHTML string
 
 // page renders every step of the setup flow.
-var page = template.Must(template.New("page").Parse(pageHTML))
+var page = template.Must(template.New("page").Funcs(template.FuncMap{
+	"label":   label,
+	"contact": contact,
+}).Parse(pageHTML))
+
+// label turns a Rogers delivery type like "ALTERNATE_1" into "Alternate 1".
+func label(s string) string {
+	s = strings.ReplaceAll(strings.ToLower(s), "_", " ")
+	if s == "" {
+		return s
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+// contact lowercases email addresses, which Rogers sends in capitals.
+func contact(s string) string {
+	if strings.Contains(s, "@") {
+		return strings.ToLower(s)
+	}
+	return s
+}
 
 type Page struct {
 	ID   string
@@ -60,7 +81,7 @@ func Start(dataDir, bank string) (*Page, error) {
 
 	p := &Page{
 		ID:      id,
-		URL:     fmt.Sprintf("http://127.0.0.1:%d/%s/", port, id),
+		URL:     fmt.Sprintf("http://127.0.0.1:%d/%s", port, id),
 		Done:    make(chan error, 1),
 		bank:    bank,
 		dataDir: dataDir,
@@ -75,7 +96,7 @@ func Start(dataDir, bank string) (*Page, error) {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /{id}/", p.form)
+	mux.HandleFunc("GET /{id}", p.form)
 	mux.HandleFunc("POST /{id}/simplefin", p.simplefin)
 	mux.HandleFunc("POST /{id}/rogers", p.rogers)
 	mux.HandleFunc("POST /{id}/answer", p.answer)
@@ -87,6 +108,9 @@ func Start(dataDir, bank string) (*Page, error) {
 	time.AfterFunc(timeout, func() { p.finish(errors.New("setup timed out")) })
 	return p, nil
 }
+
+// Close shuts the page down, for example when the user declines to open it.
+func (p *Page) Close() { p.finish(errors.New("setup cancelled")) }
 
 // finish reports err on Done and shuts the page down.
 func (p *Page) finish(err error) {
