@@ -1,5 +1,6 @@
 # Saved logins and access URLs. Never commit.
 /data/
+/data-*/
 
 # Build output
 /portage
