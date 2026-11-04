@@ -19,15 +19,36 @@ Balances and pending transactions are included for all of them.
 
 ## Install
 
-Download the program for your system from
-[Releases](https://github.com/EverythingSuckz/portage/releases/latest) and
-unzip it. Each release lists SHA-256 checksums in `checksums.txt`.
-
-With Go 1.25 or newer installed, you can instead run:
+**Windows** (PowerShell):
 
 ```
-go install go.wrench.rocks/portage/cmd/portage@latest
+irm https://go.wrench.rocks/portage/install.ps1 | iex
 ```
+
+**macOS and Linux:**
+
+```
+curl -fsSL https://go.wrench.rocks/portage/install.sh | sh
+```
+
+The installer downloads the latest release, checks it against the published
+SHA-256 checksums, installs it for your user only (no admin rights needed), and
+then runs `portage install` to add portage to your AI apps. Restart the app
+afterwards. Run the same command again to update.
+
+<details>
+<summary>Other ways to install</summary>
+
+- Download the archive for your system from
+  [Releases](https://github.com/EverythingSuckz/portage/releases/latest),
+  unzip it, and run `portage install`.
+- With Go 1.26 or newer: `go install go.wrench.rocks/portage/cmd/portage@latest`.
+- Installer settings: `PORTAGE_VERSION` (a specific release, like `v0.2.0`),
+  `PORTAGE_INSTALL_DIR` (where to put it), and `PORTAGE_NO_APPS=1` (skip
+  setting up AI apps). On Windows, `PORTAGE_NO_MODIFY_PATH=1` leaves your PATH
+  alone.
+
+</details>
 
 ## Connect your banks
 
