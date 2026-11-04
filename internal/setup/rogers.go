@@ -8,7 +8,7 @@ import (
 	"go.wrench.rocks/portage/internal/rogers"
 )
 
-// login is the Rogers sign-in flow. 
+// login is the Rogers sign-in flow.
 var login = rogers.Login
 
 // question is something the login needs to show the user next.
