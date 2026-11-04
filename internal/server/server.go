@@ -15,7 +15,8 @@ import (
 	"go.wrench.rocks/portage/internal/bank"
 )
 
-const version = "0.1.0"
+// version is set by release builds.
+var version = "dev"
 
 // cacheTTL keeps agents from logging in to the bank on every tool call.
 const cacheTTL = 15 * time.Minute

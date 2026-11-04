@@ -19,11 +19,15 @@ Balances and pending transactions are included for all of them.
 
 ## Install
 
+Download the program for your system from
+[Releases](https://github.com/EverythingSuckz/portage/releases/latest) and
+unzip it. Each release lists SHA-256 checksums in `checksums.txt`.
+
+With Go 1.25 or newer installed, you can instead run:
+
 ```
 go install go.wrench.rocks/portage/cmd/portage@latest
 ```
-
-Or build from source with `go build ./cmd/portage`. Requires Go 1.25 or newer.
 
 ## Connect your banks
 
