@@ -61,8 +61,18 @@ server a `ROGERS_PASSWORD` environment variable instead).
 
 ## Add it to your AI app
 
-**Claude Desktop:** add this to `claude_desktop_config.json`, then restart the
-app:
+```
+portage install
+```
+
+This adds portage to every supported app it finds: Claude Desktop, Claude Code,
+Cursor, and VS Code. Name apps to pick only some, for example
+`portage install claude-desktop`. Existing settings are kept, and the old file
+is saved with a `.bak` extension. Restart the app afterwards.
+
+To set it up by hand instead, add this to `claude_desktop_config.json` (or your
+app's MCP settings), using the full path to `portage` if it isn't on your
+`PATH`:
 
 ```json
 {
@@ -71,10 +81,6 @@ app:
   }
 }
 ```
-
-**Claude Code:** `claude mcp add portage -- portage serve`
-
-If `portage` isn't on your `PATH`, use the full path to the program.
 
 **MCP Inspector** (for testing tools directly in your browser):
 
