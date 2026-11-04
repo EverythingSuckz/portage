@@ -168,7 +168,6 @@ func (p *Page) rogers(w http.ResponseWriter, r *http.Request) {
 
 	params := rogers.LoginParams{
 		DataDir:       p.dataDir,
-		Name:          "rogers",
 		Username:      r.FormValue("username"),
 		Password:      r.FormValue("password"),
 		StorePassword: true,

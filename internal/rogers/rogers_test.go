@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
@@ -275,5 +276,56 @@ func TestNegate(t *testing.T) {
 		if got := negate(in); got != want {
 			t.Errorf("negate(%q) = %q, want %q", in, got, want)
 		}
+	}
+}
+
+func loginAs(t *testing.T, base, dir, name, username string, pr Prompter) {
+	t.Helper()
+	err := Login(context.Background(), LoginParams{
+		DataDir: dir, Name: name, Username: username, Password: "pw", StorePassword: true, BaseURL: base,
+	}, pr)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func savedNames(t *testing.T, dir string) string {
+	t.Helper()
+	sources, err := LoadAll(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var names []string
+	for _, s := range sources {
+		names = append(names, s.Name())
+	}
+	slices.Sort(names)
+	return strings.Join(names, ",")
+}
+
+func TestReconnectReusesExistingLogin(t *testing.T) {
+	_, base := newFake(t)
+	dir := t.TempDir()
+	loginAs(t, base, dir, "rogers-cc", "jane", &fakePrompter{codes: []string{"123456"}})
+
+	pr := &fakePrompter{codes: []string{"123456"}}
+	loginAs(t, base, dir, "", "JANE", pr)
+
+	if got := savedNames(t, dir); got != "rogers-cc" {
+		t.Errorf("saved logins = %q, want only rogers-cc", got)
+	}
+	if pr.prompted {
+		t.Error("reconnecting should reuse the trusted device and skip the code")
+	}
+}
+
+func TestNewUsernameGetsItsOwnLogin(t *testing.T) {
+	_, base := newFake(t)
+	dir := t.TempDir()
+	loginAs(t, base, dir, "", "jane", &fakePrompter{codes: []string{"123456"}})
+	loginAs(t, base, dir, "", "bob", &fakePrompter{codes: []string{"123456"}})
+
+	if got := savedNames(t, dir); got != "rogers,rogers-2" {
+		t.Errorf("saved logins = %q, want both rogers and rogers-2", got)
 	}
 }
