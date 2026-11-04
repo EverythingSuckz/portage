@@ -25,7 +25,7 @@ Usage:
   portage serve                      run the MCP server over stdio
   portage simplefin claim <token>    connect a SimpleFIN Bridge account using a setup token
   portage rogers login               sign in to Rogers Bank (asks for a one-time verification code)
-  portage connect simplefin          connect a bank in your browser
+  portage connect <simplefin|rogers> connect a bank in your browser
 
 Every command accepts -data <dir> (default: $PORTAGE_DATA or the user config dir).`
 
@@ -129,7 +129,7 @@ func claimSimpleFIN(ctx context.Context, args []string) error {
 func connect(ctx context.Context, bank string, args []string) error {
 	dataDir, fs := flags("connect", args, nil)
 	if fs.NArg() != 0 {
-		return errors.New("usage: portage connect simplefin")
+		return errors.New("usage: portage connect <simplefin|rogers>")
 	}
 	page, err := setup.Start(dataDir, bank)
 	if err != nil {
