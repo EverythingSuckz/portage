@@ -16,7 +16,12 @@ import (
 	"go.wrench.rocks/portage/internal/simplefin"
 )
 
-const timeout = 10 * time.Minute
+// timeout is how long a setup page stays open. Tests shorten it.
+var timeout = 10 * time.Minute
+
+// claim exchanges a SimpleFIN setup token for an access URL. Tests replace it
+// so they don't call the real SimpleFIN Bridge.
+var claim = simplefin.Claim
 
 //go:embed page.html
 var pageHTML string
@@ -89,7 +94,7 @@ func (p *Page) simplefin(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	accessURL, err := simplefin.Claim(r.Context(), r.FormValue("token"))
+	accessURL, err := claim(r.Context(), r.FormValue("token"))
 	if err != nil {
 		page.Execute(w, view{Step: "simplefin", ID: p.ID, Error: err.Error()})
 		return
