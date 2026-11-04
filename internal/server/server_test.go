@@ -69,7 +69,7 @@ func call[T any](t *testing.T, cs *mcp.ClientSession, tool string, args map[stri
 
 func newServer(t *testing.T, sources ...bank.Source) *Server {
 	t.Helper()
-	server, err := New(func() ([]bank.Source, error) { return sources, nil }, nil)
+	server, err := New(func() ([]bank.Source, error) { return sources, nil }, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

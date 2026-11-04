@@ -34,6 +34,7 @@ type cached struct {
 type Server struct {
 	loader Loader
 	start  Starter
+	open   Opener
 	now    func() time.Time
 
 	mu      sync.Mutex
@@ -41,15 +42,17 @@ type Server struct {
 	cache   map[string]cached
 
 	pendingMutex sync.Mutex
-	pending      map[string]*setup.Page
+	pending      map[string]*pendingSetup
 }
 
 type Loader func() ([]bank.Source, error)
 
 type Starter func(bank string) (*setup.Page, error)
 
-func New(load Loader, start Starter) (*Server, error) {
-	server := &Server{loader: load, start: start, now: time.Now, pending: map[string]*setup.Page{}}
+type Opener func(url string) error
+
+func New(load Loader, start Starter, open Opener) (*Server, error) {
+	server := &Server{loader: load, start: start, open: open, now: time.Now, pending: map[string]*pendingSetup{}}
 	if err := server.reload(); err != nil {
 		return nil, err
 	}
