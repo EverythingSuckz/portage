@@ -20,7 +20,7 @@ func loginRogers(ctx context.Context, args []string) error {
 	var name, username string
 	var storePassword bool
 	dataDir, _ := flags("rogers login", args, func(fs *flag.FlagSet) {
-		fs.StringVar(&name, "name", "rogers", "name for this login, used as the account id prefix")
+		fs.StringVar(&name, "name", "", "name for this login, used as the account id prefix (default: reuse the existing login for this username, or rogers)")
 		fs.StringVar(&username, "username", os.Getenv("ROGERS_USERNAME"), "Rogers username")
 		fs.BoolVar(&storePassword, "store-password", true, "save the password so syncs can log in; if false, set ROGERS_PASSWORD for the server")
 	})
@@ -53,7 +53,7 @@ func loginRogers(ctx context.Context, args []string) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("Rogers login saved as %q in %s", name, dataDir)
+	log.Printf("Rogers login saved in %s", dataDir)
 	return nil
 }
 

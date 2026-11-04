@@ -42,6 +42,9 @@ type LoginParams struct {
 
 // Full login flow: load any saved session, start a new client, authenticate, verify device if needed, and save the session.
 func Login(ctx context.Context, p LoginParams, pr Prompter) error {
+	if p.Name == "" {
+		p.Name = sessionName(p.DataDir, p.Username)
+	}
 	var old session
 	_ = bank.LoadSecret(sessionPath(p.DataDir, p.Name), &old)
 	deviceID := old.DeviceID
@@ -68,6 +71,23 @@ func Login(ctx context.Context, p LoginParams, pr Prompter) error {
 		s.Password = p.Password
 	}
 	return bank.SaveSecret(sessionPath(p.DataDir, p.Name), s)
+}
+
+func sessionName(dataDir, username string) string {
+	sources, _ := LoadAll(dataDir)
+	taken := map[string]bool{}
+	for _, s := range sources {
+		var sess session
+		if bank.LoadSecret(sessionPath(dataDir, s.name), &sess) == nil && strings.EqualFold(sess.Username, username) {
+			return s.name
+		}
+		taken[s.name] = true
+	}
+	name := "rogers"
+	for i := 2; taken[name]; i++ {
+		name = fmt.Sprintf("rogers-%d", i)
+	}
+	return name
 }
 
 func verifyDevice(ctx context.Context, c *client, username, deviceID string, pr Prompter) error {

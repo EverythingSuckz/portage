@@ -8,3 +8,4 @@
 *.exe~
 /dist/
 *.tmp
+data-test/*

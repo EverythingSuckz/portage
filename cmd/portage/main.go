@@ -15,6 +15,7 @@ import (
 	"go.wrench.rocks/portage/internal/bank"
 	"go.wrench.rocks/portage/internal/rogers"
 	"go.wrench.rocks/portage/internal/server"
+	"go.wrench.rocks/portage/internal/setup"
 	"go.wrench.rocks/portage/internal/simplefin"
 )
 
@@ -24,6 +25,7 @@ Usage:
   portage serve                      run the MCP server over stdio
   portage simplefin claim <token>    connect a SimpleFIN Bridge account using a setup token
   portage rogers login               sign in to Rogers Bank (asks for a one-time verification code)
+  portage connect <simplefin|rogers> connect a bank in your browser
 
 Every command accepts -data <dir> (default: $PORTAGE_DATA or the user config dir).`
 
@@ -44,6 +46,8 @@ func main() {
 		err = claimSimpleFIN(ctx, args[2:])
 	case len(args) >= 2 && args[0] == "rogers" && args[1] == "login":
 		err = loginRogers(ctx, args[2:])
+	case len(args) >= 2 && args[0] == "connect":
+		err = connect(ctx, args[1], args[2:])
 	default:
 		fmt.Fprintln(os.Stderr, usage)
 		os.Exit(2)
@@ -84,10 +88,9 @@ func loadSources(dataDir string) ([]bank.Source, error) {
 	rs, err := rogers.LoadAll(dataDir)
 	if err != nil {
 		return nil, fmt.Errorf("load rogers: %w", err)
-	} else {
-		for _, r := range rs {
-			sources = append(sources, r)
-		}
+	}
+	for _, r := range rs {
+		sources = append(sources, r)
 	}
 	log.Printf("portage: %d bank source(s) loaded from %s", len(sources), dataDir)
 	return sources, nil
@@ -100,7 +103,10 @@ func serve(ctx context.Context, args []string) error {
 	load := func() ([]bank.Source, error) {
 		return loadSources(dataDir)
 	}
-	srv, err := server.New(load)
+	start := func(bank string) (*setup.Page, error) {
+		return setup.Start(dataDir, bank)
+	}
+	srv, err := server.New(load, start, openBrowser)
 	if err != nil {
 		return err
 	}
@@ -121,4 +127,23 @@ func claimSimpleFIN(ctx context.Context, args []string) error {
 	}
 	log.Printf("SimpleFIN connected. Saved to %s", dataDir)
 	return nil
+}
+
+func connect(ctx context.Context, bank string, args []string) error {
+	dataDir, fs := flags("connect", args, nil)
+	if fs.NArg() != 0 {
+		return errors.New("usage: portage connect <simplefin|rogers>")
+	}
+	page, err := setup.Start(dataDir, bank)
+	if err != nil {
+		return err
+	}
+	log.Printf("Open this link: %s", page.URL)
+	select {
+	case err := <-page.Done:
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+
 }

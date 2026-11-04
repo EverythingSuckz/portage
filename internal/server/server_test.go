@@ -69,7 +69,7 @@ func call[T any](t *testing.T, cs *mcp.ClientSession, tool string, args map[stri
 
 func newServer(t *testing.T, sources ...bank.Source) *Server {
 	t.Helper()
-	server, err := New(func() ([]bank.Source, error) { return sources, nil })
+	server, err := New(func() ([]bank.Source, error) { return sources, nil }, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -141,10 +141,10 @@ func TestReadOnlyTools(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(res.Tools) != 2 {
-		t.Errorf("tools = %d, want 2", len(res.Tools))
-	}
 	for _, tool := range res.Tools {
+		if tool.Name == "connect_bank" {
+			continue // it saves logins; see TestConnectToolIsNotReadOnly
+		}
 		if tool.Annotations == nil || !tool.Annotations.ReadOnlyHint {
 			t.Errorf("%s is not marked read-only", tool.Name)
 		}
