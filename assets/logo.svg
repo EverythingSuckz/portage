@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <clipPath id="tile"><rect x="16" y="16" width="224" height="224" rx="56"/></clipPath>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="6" stdDeviation="7" flood-color="#0B3040" flood-opacity=".35"/>
+    </filter>
+  </defs>
+  <g filter="url(#sh)">
+    <g clip-path="url(#tile)" stroke-linejoin="round">
+      <polygon points="16,16 240,16 240,110 16,110" fill="#6CCCF0"/>
+      <polygon points="16,16 128,16 16,110" fill="#8FDCF7"/>
+      <polygon points="240,16 240,110 150,60" fill="#4FB8E6"/>
+      <polygon points="16,110 96,70 176,112 240,96 240,150 16,150" fill="#37AE88"/>
+      <polygon points="16,110 96,70 120,150 16,150" fill="#45C29A"/>
+      <polygon points="16,150 240,150 240,240 16,240" fill="#1E6FB5"/>
+      <polygon points="16,150 128,150 16,240" fill="#2A82C8"/>
+      <polygon points="34,118 128,134 222,118 180,172 76,172" fill="#F07A3A"/>
+      <polygon points="34,118 76,172 128,134" fill="#FF9A52"/>
+      <polygon points="222,118 180,172 128,134" fill="#D9592A"/>
+    </g>
+  </g>
+</svg>

@@ -23,6 +23,7 @@ const usage = `Portage is a read-only MCP server for Canadian bank accounts
 
 Usage:
   portage serve                      run the MCP server over stdio
+  portage install [-data dir] [app...]  add portage to your AI apps (claude-desktop, claude-code, cursor, vscode)
   portage simplefin claim <token>    connect a SimpleFIN Bridge account using a setup token
   portage rogers login               sign in to Rogers Bank (asks for a one-time verification code)
   portage connect <simplefin|rogers> connect a bank in your browser
@@ -46,6 +47,8 @@ func main() {
 		err = claimSimpleFIN(ctx, args[2:])
 	case len(args) >= 2 && args[0] == "rogers" && args[1] == "login":
 		err = loginRogers(ctx, args[2:])
+	case args[0] == "install":
+		err = installApps(args[1:])
 	case len(args) >= 2 && args[0] == "connect":
 		err = connect(ctx, args[1], args[2:])
 	default:

@@ -27,9 +27,16 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pack the Claude Desktop extension
+        run: sh scripts/mcpb.sh "${GITHUB_REF_NAME#v}"
+      - name: Attach the extension to the release
+        run: gh release upload "$GITHUB_REF_NAME" dist/*.mcpb
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: |
             dist/*.tar.gz
             dist/*.zip
             dist/checksums.txt
+            dist/*.mcpb

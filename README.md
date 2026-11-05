@@ -1,129 +1,122 @@
-# portage
+<p align="center">
+  <img src="assets/logo.svg" width="112" alt="portage logo">
+</p>
 
-A read-only [MCP](https://modelcontextprotocol.io) server that lets AI agents
-(Claude, Cursor, VS Code, and others) see balances and transactions from
-Canadian bank accounts. It runs on your computer, and your logins never leave
-it.
+<h1 align="center">portage</h1>
 
-> Direct adapters use unofficial bank APIs that can change or break at any time.
-> Use them with your own accounts, at your own risk.
+<p align="center">
+  Let your AI see your Canadian bank accounts. Read-only, and your logins never leave your computer.
+</p>
 
-## Supported banks
+<p align="center">
+  <a href="https://github.com/EverythingSuckz/portage/releases/latest"><img src="https://img.shields.io/github/v/release/EverythingSuckz/portage" alt="Latest release"></a>
+  <a href="https://github.com/EverythingSuckz/portage/actions/workflows/ci.yml"><img src="https://github.com/EverythingSuckz/portage/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/EverythingSuckz/portage" alt="MIT license"></a>
+</p>
 
-| Bank | Connection | Accounts | Transaction history |
-|------|------------|----------|---------------------|
-| Rogers Bank | Direct adapter | Credit cards | Current and previous 2 statement periods |
-| [Banks on SimpleFIN Bridge](https://beta-bridge.simplefin.org/search-institutions) | [SimpleFIN Bridge](https://bridge.simplefin.org) (paid) | Depends on the bank | Last 90 days |
+---
 
-Balances and pending transactions are included for all of them.
+Portage is an [MCP](https://modelcontextprotocol.io) server for Claude, Cursor,
+VS Code, and other AI apps. Ask things like:
+
+> *What's my credit card balance?* · *How much did I spend on groceries last
+> month?* · *Show my biggest purchases since September.*
 
 ## Install
 
-Download the program for your system from
+**Claude Desktop:** download `portage-mcp_<version>.mcpb` from
 [Releases](https://github.com/EverythingSuckz/portage/releases/latest) and
-unzip it. Each release lists SHA-256 checksums in `checksums.txt`.
+double-click it.
 
-With Go 1.25 or newer installed, you can instead run:
-
-```
-go install go.wrench.rocks/portage/cmd/portage@latest
-```
-
-## Connect your banks
-
-The easiest way is to ask your AI app, for example "connect my Rogers account".
-It calls the `connect_bank` tool, which opens a sign-in page in your browser.
-Passwords and verification codes are typed on that page, never in the chat.
-
-You can also open the same page from a terminal:
+**Windows** (PowerShell):
 
 ```
-portage connect rogers
-portage connect simplefin
+irm https://go.wrench.rocks/portage/install.ps1 | iex
 ```
 
-Logins are saved, readable only by you, in your user config folder
-(`%AppData%\portage` on Windows, `~/.config/portage` on Linux,
-`~/Library/Application Support/portage` on macOS). Pass `-data <dir>` or set
-`PORTAGE_DATA` to use another folder.
-
-- **SimpleFIN Bridge** needs a setup token from the Bridge website. Each token
-  works only once.
-- **Rogers Bank** asks for your username, password, and a verification code sent
-  by email or text. Rogers then trusts this device for a few months; when it
-  stops, the tools return a warning asking you to connect again.
-
-Prefer the terminal only? `portage simplefin claim <setup-token>` and
-`portage rogers login` do the same without a browser. `portage rogers login`
-also supports `-name <name>` for more than one Rogers login, and
-`-store-password=false` to keep the password out of the saved file (give the
-server a `ROGERS_PASSWORD` environment variable instead).
-
-## Add it to your AI app
-
-**Claude Desktop:** add this to `claude_desktop_config.json`, then restart the
-app:
-
-```json
-{
-  "mcpServers": {
-    "portage": { "command": "portage", "args": ["serve"] }
-  }
-}
-```
-
-**Claude Code:** `claude mcp add portage -- portage serve`
-
-If `portage` isn't on your `PATH`, use the full path to the program.
-
-**MCP Inspector** (for testing tools directly in your browser):
+**macOS and Linux:**
 
 ```
-bunx @modelcontextprotocol/inspector portage serve
+curl -fsSL https://go.wrench.rocks/portage/install.sh | sh
 ```
 
-Use `npx` instead of `bunx` if you don't have Bun. Add `-data <dir>` after
-`serve` if your logins are somewhere other than the default folder.
+The installer checks the download against the release checksums, installs it
+for your user only, and adds portage to Claude Desktop, Claude Code, Cursor,
+and VS Code. Restart your AI app, then ask it to **"connect my bank"**: a
+sign-in page opens in your browser, so passwords never go through the chat.
 
-## Tools
+## Supported banks
+
+| Bank | Accounts | History |
+|------|----------|---------|
+| Rogers Bank | Credit cards | Current and last 2 statements |
+| [Any bank on SimpleFIN Bridge](https://beta-bridge.simplefin.org/search-institutions) (paid service) | Depends on the bank | Last 90 days |
+
+> Rogers uses an unofficial API that can change at any time. Use it with your
+> own account, at your own risk.
+
+## Privacy
+
+Portage runs entirely on your computer and collects no analytics. Logins are
+saved in a file only your user account can read, and portage talks only to your
+bank or SimpleFIN Bridge. Your AI app sees account names, balances, and
+transactions, never passwords or verification codes. To remove everything,
+delete the `portage` folder in your user config folder (`%AppData%` on Windows,
+`~/Library/Application Support` on macOS, `~/.config` on Linux).
+
+<details>
+<summary><b>More: other install methods, terminal setup, tools</b></summary>
+
+### Other ways to install
+
+- Download the archive for your system from
+  [Releases](https://github.com/EverythingSuckz/portage/releases/latest), unzip
+  it, and run `portage install`.
+- With Go 1.26 or newer: `go install go.wrench.rocks/portage/cmd/portage@latest`.
+- Installer settings: `PORTAGE_VERSION` (like `v0.2.0`), `PORTAGE_INSTALL_DIR`,
+  `PORTAGE_NO_APPS=1`, and on Windows `PORTAGE_NO_MODIFY_PATH=1`.
+
+### Commands
+
+| Command | What it does |
+|---------|--------------|
+| `portage install [app...]` | Add portage to AI apps (`claude-desktop`, `claude-code`, `cursor`, `vscode`). Keeps a `.bak` of each config. |
+| `portage connect <rogers\|simplefin>` | Open the sign-in page from a terminal. |
+| `portage rogers login` | Sign in to Rogers in the terminal. `-store-password=false` keeps the password out of the saved file (set `ROGERS_PASSWORD` instead). |
+| `portage simplefin claim <token>` | Connect SimpleFIN Bridge with a setup token. |
+| `portage serve` | Run the MCP server over stdio (what AI apps start). |
+
+Every command takes `-data <dir>` (or `PORTAGE_DATA`) to use another data folder.
+
+To add portage to an app by hand, use command `portage` with args `["serve"]`
+(full path if it isn't on your `PATH`).
+
+### Tools
 
 | Tool | What it does |
 |------|--------------|
-| `list_accounts` | Every connected account with its balance and available balance. |
-| `get_transactions` | Transactions, newest first. Optional filters: `account_id`, `start_date`, `end_date` (YYYY-MM-DD, inclusive), `search` (description or category), `limit` (default 100, max 1000). |
-| `connect_bank` | Opens a sign-in page in your browser to connect `rogers` or `simplefin`. |
+| `list_accounts` | Every connected account with its balance. |
+| `get_transactions` | Transactions, newest first. Filters: `account_id`, `start_date`, `end_date`, `search`, `limit`. |
+| `connect_bank` | Opens the sign-in page to connect `rogers` or `simplefin`. |
 
-`list_accounts` and `get_transactions` are read-only. Nothing can move money.
+Amounts are decimal strings: positive is money in, negative is money out, and a
+negative card balance is the amount owed. Results are cached for 15 minutes.
 
-- Amounts are decimal strings. Positive is money in, negative is money out. A
-  negative credit card balance is the amount owed.
-- Results are cached for 15 minutes, so agents don't log in to your bank on
-  every question.
-- If one bank fails, the others still return data, and the problem is listed in
-  `warnings`.
+### Adding a bank
 
-## Adding a bank
+Implement `bank.Source` (`Name` and `Fetch`) in a new package under `internal/`
+and load it in `loadSources` in `cmd/portage/main.go`. `internal/rogers` is a
+full example with sign-in and two-factor verification.
 
-A source implements one interface from `internal/bank`:
-
-```go
-type Source interface {
-    Name() string
-    Fetch(ctx context.Context) (Snapshot, error)
-}
-```
-
-`Fetch` returns every account and recent transaction. Filtering, caching, and
-merging happen in `internal/server`. Load the new source in `loadSources` in
-`cmd/portage/main.go`. See `internal/rogers` for a full example with login and
-two-factor verification.
-
-## Development
+### Development
 
 ```
 go test ./...
 go vet ./...
+bunx @modelcontextprotocol/inspector go run ./cmd/portage serve
 ```
+
+</details>
 
 ## License
 

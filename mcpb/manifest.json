@@ -1,0 +1,51 @@
+{
+  "manifest_version": "0.3",
+  "name": "portage",
+  "display_name": "Portage",
+  "version": "0.0.0",
+  "description": "Read-only access to your Canadian bank and credit card balances and transactions.",
+  "long_description": "Portage lets Claude see balances and transactions from Canadian banks, through SimpleFIN Bridge or a direct Rogers Bank connection. Ask Claude to connect a bank and a sign-in page opens in your browser; passwords and codes are typed there, never in the chat. Logins are stored only on this computer, and nothing can move money.",
+  "author": {
+    "name": "EverythingSuckz",
+    "url": "https://github.com/EverythingSuckz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EverythingSuckz/portage"
+  },
+  "homepage": "https://github.com/EverythingSuckz/portage",
+  "support": "https://github.com/EverythingSuckz/portage/issues",
+  "license": "MIT",
+  "keywords": ["banking", "finance", "canada", "rogers", "simplefin", "transactions"],
+  "privacy_policies": ["https://github.com/EverythingSuckz/portage#privacy"],
+  "server": {
+    "type": "binary",
+    "entry_point": "server/portage",
+    "mcp_config": {
+      "command": "${__dirname}/server/portage",
+      "args": ["serve"],
+      "platform_overrides": {
+        "win32": {
+          "command": "${__dirname}/server/portage.exe"
+        }
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "list_accounts",
+      "description": "List every connected bank and credit card account with its current balance."
+    },
+    {
+      "name": "get_transactions",
+      "description": "Get transactions, newest first, filtered by account, dates, or text."
+    },
+    {
+      "name": "connect_bank",
+      "description": "Open a sign-in page in your browser to connect Rogers Bank or SimpleFIN Bridge."
+    }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32"]
+  }
+}
